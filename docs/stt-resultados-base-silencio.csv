@@ -1,0 +1,21 @@
+n;referencia;transcripcion;segundos;ram_pico_mb;utilizable
+1;Hola, ¿cómo estás hoy?;como esta hoy;2.76;282;si
+2;¿Qué hora es en Colombia?;¿Qué hora es en Colombia?;2.51;282;si
+3;Cuéntame un dato curioso sobre los planetas.;Cuentan un dato curioso sobre los planetas.;3.83;282;si
+4;¿Cuánto es doce por ocho?;cuánto es dos y por otro.;2.72;283;no
+5;Explícame qué es un asistente de voz.;plícame que es un asistente de voz;3.03;281;si
+6;¿Cuál es la capital de Francia?;¿Cuál es la capital de Francia?;2.67;283;si
+7;Dime tres frutas tropicales.;Dime tres frutas tropicales.;2.41;283;si
+8;¿Qué día de la semana es mañana?;¿Qué día de la semana es mañana?;2.89;282;si
+9;Cuéntame un chiste corto.;Cuéntame un chiste corto.;2.65;282;si
+10;¿Cómo se prepara un café con leche?;como se prepara un café con leche;2.52;282;si
+11;Recomiéndame una película de ciencia ficción.;Recombiéndame una película de ciencia ficción.;3.24;282;si
+12;¿Qué significa inteligencia artificial?;que significa inteligencia artificial.;2.59;281;si
+13;Enciende la luz de la sala.;entiende la luz de la sala;3.06;282;si
+14;¿Cuántos días tiene el mes de febrero?;¿Cuántos días tiene el mes de febrero?;3.07;282;si
+15;Resume en una frase qué es una batería de litio.;Resumen una frase que es una batería del litio.;2.56;282;si
+16;¿Dónde queda el río Amazonas?;donde te queda el Trio Amazonas.;2.41;282;si
+17;Dame un consejo para estudiar mejor.;Dame un consejo para subir mejor.;3.86;282;no
+18;¿Cuál es el animal más rápido del mundo?;¿Cuál es el animal más rápido del mundo?;2.69;282;si
+19;Háblame del clima en un día lluvioso.;hablame clima en india y curioso;2.85;282;no
+20;Gracias, hasta luego.;Gracias, hasta luego.;2.79;283;no
