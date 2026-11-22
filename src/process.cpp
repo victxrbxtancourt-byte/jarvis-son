@@ -1,15 +1,15 @@
 #include "jarvis/process.hpp"
 
-#include <algorithm>
-#include <cerrno>
-#include <chrono>
-#include <cstring>
-
 #include <fcntl.h>
 #include <poll.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+#include <algorithm>
+#include <cerrno>
+#include <chrono>
+#include <cstring>
 
 namespace jarvis {
 
@@ -223,8 +223,10 @@ std::string describe_failure(const RunResult& r) {
     if (r.timed_out) return "tiempo agotado";
     if (r.term_signal == SIGKILL)
         return "el proceso fue terminado por la señal 9 (posible falta de memoria)";
-    if (r.term_signal != 0) return "el proceso terminó por la señal " + std::to_string(r.term_signal);
-    if (r.exit_code == 127) return "código de salida 127 (no se encontró o no se pudo ejecutar el programa)";
+    if (r.term_signal != 0)
+        return "el proceso terminó por la señal " + std::to_string(r.term_signal);
+    if (r.exit_code == 127)
+        return "código de salida 127 (no se encontró o no se pudo ejecutar el programa)";
     return "código de salida " + std::to_string(r.exit_code);
 }
 

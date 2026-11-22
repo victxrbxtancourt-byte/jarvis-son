@@ -9,4 +9,3 @@ enum class State { Ready, Recording, Transcribing, Generating, Speaking, Error }
 const char* state_name(State s);
 
 }  // namespace jarvis
-

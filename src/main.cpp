@@ -31,19 +31,19 @@ void install_signal_handlers() {
 
 void usage(const char* prog) {
     std::fprintf(stderr,
-        "Uso: %s [opciones]\n"
-        "  --turns N       número de turnos consecutivos (1-100, por defecto 1)\n"
-        "  --seconds N     segundos de grabación por turno (1-30, por defecto 5)\n"
-        "  --threads N     hilos para STT y SLM (1-16, por defecto 4)\n"
-        "  --log ARCHIVO   agrega tiempos y memoria por etapa a un CSV (sin texto)\n"
-        "  --show-text     muestra la transcripción y la respuesta en pantalla\n"
-        "  --check         solo comprueba rutas y parámetros, sin ejecutar nada\n"
-        "  --help          muestra esta ayuda\n"
-        "\n"
-        "Rutas por variables de entorno: JARVIS_CAPTURE, JARVIS_TTS,\n"
-        "JARVIS_WHISPER_BIN, JARVIS_WHISPER_MODEL, JARVIS_LLAMA_BIN,\n"
-        "JARVIS_LLAMA_MODEL, JARVIS_TMPDIR.\n",
-        prog);
+                 "Uso: %s [opciones]\n"
+                 "  --turns N       número de turnos consecutivos (1-100, por defecto 1)\n"
+                 "  --seconds N     segundos de grabación por turno (1-30, por defecto 5)\n"
+                 "  --threads N     hilos para STT y SLM (1-16, por defecto 4)\n"
+                 "  --log ARCHIVO   agrega tiempos y memoria por etapa a un CSV (sin texto)\n"
+                 "  --show-text     muestra la transcripción y la respuesta en pantalla\n"
+                 "  --check         solo comprueba rutas y parámetros, sin ejecutar nada\n"
+                 "  --help          muestra esta ayuda\n"
+                 "\n"
+                 "Rutas por variables de entorno: JARVIS_CAPTURE, JARVIS_TTS,\n"
+                 "JARVIS_WHISPER_BIN, JARVIS_WHISPER_MODEL, JARVIS_LLAMA_BIN,\n"
+                 "JARVIS_LLAMA_MODEL, JARVIS_TMPDIR.\n",
+                 prog);
 }
 
 bool parse_int(const char* text, int lo, int hi, int& out) {
@@ -67,10 +67,10 @@ void append_log(const std::string& path, int turn, const jarvis::TurnResult& r) 
         f << "turno;resultado;fallo;captura_s;captura_ram_mb;stt_s;stt_ram_mb;"
              "slm_s;slm_ram_mb;tts_s;tts_ram_mb;total_s\n";
     char line[256];
-    std::snprintf(line, sizeof line, "%d;%s;%s;%.2f;%.0f;%.2f;%.0f;%.2f;%.0f;%.2f;%.0f;%.2f\n", turn,
-                  r.ok ? "ok" : "error", r.ok ? "-" : jarvis::state_name(r.failed_at),
-                  r.capture.seconds, r.capture.ram_mb, r.stt.seconds, r.stt.ram_mb,
-                  r.slm.seconds, r.slm.ram_mb, r.tts.seconds, r.tts.ram_mb, r.total_seconds);
+    std::snprintf(line, sizeof line, "%d;%s;%s;%.2f;%.0f;%.2f;%.0f;%.2f;%.0f;%.2f;%.0f;%.2f\n",
+                  turn, r.ok ? "ok" : "error", r.ok ? "-" : jarvis::state_name(r.failed_at),
+                  r.capture.seconds, r.capture.ram_mb, r.stt.seconds, r.stt.ram_mb, r.slm.seconds,
+                  r.slm.ram_mb, r.tts.seconds, r.tts.ram_mb, r.total_seconds);
     f << line;
 }
 
@@ -98,12 +98,16 @@ int main(int argc, char** argv) {
             const int lo = 1;
             const int hi = (a == "--turns") ? 100 : (a == "--seconds") ? 30 : 16;
             if (!parse_int(next, lo, hi, v)) {
-                std::fprintf(stderr, "ERROR: %s necesita un entero entre %d y %d\n", a.c_str(), lo, hi);
+                std::fprintf(stderr, "ERROR: %s necesita un entero entre %d y %d\n", a.c_str(), lo,
+                             hi);
                 return 2;
             }
-            if (a == "--turns") turns = v;
-            else if (a == "--seconds") cfg.record_seconds = v;
-            else cfg.threads = v;
+            if (a == "--turns")
+                turns = v;
+            else if (a == "--seconds")
+                cfg.record_seconds = v;
+            else
+                cfg.threads = v;
             ++i;
         } else if (a == "--log") {
             if (next == nullptr || *next == '\0') {
@@ -146,7 +150,8 @@ int main(int argc, char** argv) {
             if (!r.response.empty()) std::printf("Jarvis-son: %s\n", r.response.c_str());
         }
         if (r.ok) {
-            std::fprintf(stderr,
+            std::fprintf(
+                stderr,
                 "[tiempos] captura=%.2fs stt=%.2fs slm=%.2fs tts=%.2fs total=%.2fs\n"
                 "[memoria] captura=%.0fMB stt=%.0fMB slm=%.0fMB tts=%.0fMB (pico por proceso)\n",
                 r.capture.seconds, r.stt.seconds, r.slm.seconds, r.tts.seconds, r.total_seconds,

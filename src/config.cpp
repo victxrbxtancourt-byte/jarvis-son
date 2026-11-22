@@ -1,8 +1,9 @@
 #include "jarvis/config.hpp"
 
-#include <cstdlib>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <cstdlib>
 
 namespace jarvis {
 
@@ -16,7 +17,8 @@ std::string env_or(const char* name, const std::string& fallback) {
 void check_path(std::vector<std::string>& problems, const char* label, const std::string& path,
                 int mode, const char* mode_name) {
     if (path.empty() || path.find('/') == std::string::npos) {
-        problems.push_back(std::string(label) + ": debe ser una ruta con '/' (valor: '" + path + "')");
+        problems.push_back(std::string(label) + ": debe ser una ruta con '/' (valor: '" + path +
+                           "')");
         return;
     }
     if (access(path.c_str(), mode) != 0)

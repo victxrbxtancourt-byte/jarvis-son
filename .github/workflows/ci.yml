@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  compilacion:
+    name: Compilar y probar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compilar
+        run: cmake --build build -j2
+
+      - name: Pruebas
+        run: ctest --test-dir build --output-on-failure
+
+  formato:
+    name: Revisar formato
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar clang-format (versión fija)
+        run: pip install clang-format==23.1.5
+
+      - name: Formato del código C++
+        run: clang-format --dry-run --Werror $(git ls-files '*.cpp' '*.hpp')
+
+      - name: Sintaxis de los scripts de shell
+        run: |
+          for f in $(git ls-files '*.sh'); do
+            bash -n "$f" || exit 1
+          done
+
+      - name: Scripts con saltos de línea LF
+        run: |
+          if git ls-files '*.sh' | xargs grep -lI $'\r'; then
+            echo "Hay scripts con saltos de línea CRLF"
+            exit 1
+          fi

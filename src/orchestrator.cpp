@@ -1,12 +1,11 @@
 #include "jarvis/orchestrator.hpp"
 
 #include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <system_error>
 #include <utility>
 #include <vector>
-
-#include <cstdlib>
 
 #include "jarvis/process.hpp"
 #include "jarvis/text.hpp"
@@ -99,8 +98,17 @@ TurnResult Orchestrator::run_turn() {
     enter(State::Transcribing);
     {
         RunOptions o;
-        o.argv = {cfg_.whisper_bin, "-m", cfg_.whisper_model, "-f", wav, "-l", "es",
-                  "-t", std::to_string(cfg_.threads), "-nt", "-np"};
+        o.argv = {cfg_.whisper_bin,
+                  "-m",
+                  cfg_.whisper_model,
+                  "-f",
+                  wav,
+                  "-l",
+                  "es",
+                  "-t",
+                  std::to_string(cfg_.threads),
+                  "-nt",
+                  "-np"};
         o.timeout_s = cfg_.timeout_stt;
         const RunResult rr = run_process(o, stop_);
         res.stt = {rr.seconds, ram_mb(rr)};
@@ -119,14 +127,27 @@ TurnResult Orchestrator::run_turn() {
     {
         RunOptions o;
         // El texto transcrito viaja como UN argumento de execvp, sin shell.
-        o.argv = {cfg_.llama_bin, "-m", cfg_.llama_model,
-                  "-c", std::to_string(cfg_.ctx),
-                  "-n", std::to_string(cfg_.n_predict),
-                  "-t", std::to_string(cfg_.threads),
-                  "--seed", std::to_string(cfg_.seed),
-                  "--temp", "0.7", "--top-k", "20", "--top-p", "0.8",
-                  "-no-cnv", "--no-display-prompt",
-                  "-p", build_prompt(res.transcript)};
+        o.argv = {cfg_.llama_bin,
+                  "-m",
+                  cfg_.llama_model,
+                  "-c",
+                  std::to_string(cfg_.ctx),
+                  "-n",
+                  std::to_string(cfg_.n_predict),
+                  "-t",
+                  std::to_string(cfg_.threads),
+                  "--seed",
+                  std::to_string(cfg_.seed),
+                  "--temp",
+                  "0.7",
+                  "--top-k",
+                  "20",
+                  "--top-p",
+                  "0.8",
+                  "-no-cnv",
+                  "--no-display-prompt",
+                  "-p",
+                  build_prompt(res.transcript)};
         o.timeout_s = cfg_.timeout_slm;
         const RunResult rr = run_process(o, stop_);
         res.slm = {rr.seconds, ram_mb(rr)};
