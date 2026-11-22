@@ -1,40 +1,47 @@
 #pragma once
 
+#include <csignal>
+#include <functional>
 #include <string>
-#include <vector>
+
+#include "jarvis/config.hpp"
+#include "jarvis/state.hpp"
 
 namespace jarvis {
 
-struct Config {
-    // Rutas. Todas deben contener '/' para que nunca se busquen en PATH.
-    std::string capture_script = "scripts/capture.sh";
-    std::string tts_script = "scripts/tts.sh";
-    std::string whisper_bin;
-    std::string whisper_model;
-    std::string llama_bin;
-    std::string llama_model;
-    std::string tmp_base;
-
-    // Parámetros fijos del proyecto (ver docs/interfaces.md).
-    int record_seconds = 5;
-    int threads = 4;
-    int ctx = 1024;
-    int n_predict = 96;
-    int seed = 42;
-
-    // Tiempos máximos por etapa, en segundos.
-    int timeout_capture_extra = 30;  // se suma a record_seconds
-    int timeout_stt = 90;
-    int timeout_slm = 180;
-    int timeout_tts = 90;
+struct StageStats {
+    double seconds = 0.0;
+    double ram_mb = 0.0;  // memoria residente máxima del proceso de la etapa
 };
 
-// Valores por defecto del equipo de pruebas, con sobreescritura por variables
-// de entorno: JARVIS_CAPTURE, JARVIS_TTS, JARVIS_WHISPER_BIN,
-// JARVIS_WHISPER_MODEL, JARVIS_LLAMA_BIN, JARVIS_LLAMA_MODEL, JARVIS_TMPDIR.
-Config config_from_env();
+struct TurnResult {
+    bool ok = false;
+    State failed_at = State::Ready;  // etapa en la que falló (si ok == false)
+    std::string message;             // motivo del fallo
+    StageStats capture, stt, slm, tts;
+    double total_seconds = 0.0;
 
-// Devuelve la lista de problemas encontrados (vacía si todo está bien).
-std::vector<std::string> validate_config(const Config& cfg);
+    // Solo en memoria, para mostrarlos con --show-text. Nunca se escriben a disco.
+    std::string transcript;
+    std::string response;
+};
+
+// Orquesta un turno: Listo -> Grabando -> Transcribiendo -> Generando ->
+// Hablando -> Listo (o Error -> Listo). Cada etapa es un proceso aparte, con
+// argumentos fijos, y termina antes de que empiece la siguiente.
+class Orchestrator {
+public:
+    using StateCallback = std::function<void(State)>;
+
+    Orchestrator(Config cfg, const volatile std::sig_atomic_t* stop_flag, StateCallback on_state);
+
+    TurnResult run_turn();
+
+private:
+    Config cfg_;
+    const volatile std::sig_atomic_t* stop_;
+    StateCallback on_state_;
+};
 
 }  // namespace jarvis
+
