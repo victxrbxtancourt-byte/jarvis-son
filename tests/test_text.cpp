@@ -39,8 +39,8 @@ int main() {
 
     // Truncado sin partir UTF-8: "é" ocupa 2 bytes
     {
-        const std::string s = "aaé";  // bytes: a a 0xC3 0xA9
-        CHECK_EQ(truncate_utf8(s, 3), std::string("aa"));   // no deja medio carácter
+        const std::string s = "aaé";                       // bytes: a a 0xC3 0xA9
+        CHECK_EQ(truncate_utf8(s, 3), std::string("aa"));  // no deja medio carácter
         CHECK_EQ(truncate_utf8(s, 4), s);
         const std::string t = truncate_utf8("hola mundo", 5);  // "hola " -> sin espacio final
         CHECK_EQ(t, std::string("hola"));
@@ -51,7 +51,8 @@ int main() {
     {
         const std::string p = build_prompt("¿Cuál es la capital de Francia?");
         CHECK(p.find("<|im_start|>system\n") == 0);
-        CHECK(p.find("<|im_start|>user\n¿Cuál es la capital de Francia?<|im_end|>") != std::string::npos);
+        CHECK(p.find("<|im_start|>user\n¿Cuál es la capital de Francia?<|im_end|>") !=
+              std::string::npos);
         const std::string tail = "<|im_start|>assistant\n<think>\n\n</think>\n\n";
         CHECK(p.size() >= tail.size() && p.compare(p.size() - tail.size(), tail.size(), tail) == 0);
     }
